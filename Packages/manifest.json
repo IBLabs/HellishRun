@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.naelstrof.jigglephysics": "https://github.com/naelstrof/UnityJigglePhysics.git#upm",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.2d.tilemap": "1.0.0",
     "com.unity.ads": "4.4.1",
@@ -21,6 +22,7 @@
     "com.unity.timeline": "1.7.3",
     "com.unity.toonshader": "0.8.4-preview",
     "com.unity.ugui": "1.0.0",
+    "com.unity.visualeffectgraph": "14.0.6",
     "com.unity.visualscripting": "1.8.0",
     "com.unity.xr.legacyinputhelpers": "2.1.10",
     "com.unity.modules.ai": "1.0.0",

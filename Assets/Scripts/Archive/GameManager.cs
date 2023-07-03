@@ -17,10 +17,11 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        StartCoroutine(PlayIntroCoroutine());
         UpdateState(
             new GameStateChangeDescriptor()
             {
-                newState = GameState.ShowingBeats
+                newState = GameState.Intro
             }
         );
     }
@@ -39,12 +40,14 @@ public class GameManager : MonoBehaviour
     {
         BeatInstructor.FinishedSequence += OnFinishedSequence;
         MSObstacleTrackController.FinishedSpawningObstacles += OnFinishedSpawningObstacles;
+        MSObstaclePreviewer.PlayerFinishedObstacleSequence += OnPlayerFinishedObstacleSequence;
     }
 
     private void UnsubscribeEvents()
     {
         BeatInstructor.FinishedSequence -= OnFinishedSequence;
         MSObstacleTrackController.FinishedSpawningObstacles -= OnFinishedSpawningObstacles;
+        MSObstaclePreviewer.PlayerFinishedObstacleSequence -= OnPlayerFinishedObstacleSequence;
     }
 
     private void UpdateState(GameStateChangeDescriptor descriptor)
@@ -59,12 +62,18 @@ public class GameManager : MonoBehaviour
 
         switch (descriptor.newState)
         {
+            case GameState.Intro:
+                break;
+
             case GameState.ShowingBeats:
                 _beatInstructor.ShowSequence();
                 break;
             
             case GameState.Obstacles:
-                _obstacleTrackController.StartSpawning((List<string>)descriptor.context["obstacles"]);
+                _obstacleTrackController.StartSpawning((List<ObstacleNote>)descriptor.context["obstacles"]);
+                break;
+            
+            case GameState.PlayerTurn:
                 break;
 
             case GameState.BeatSuccess:
@@ -76,7 +85,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void OnFinishedSequence(List<string> notes)
+    private void OnFinishedSequence(List<ObstacleNote> notes)
     {
         GameStateChangeDescriptor descriptor = new GameStateChangeDescriptor
         {
@@ -95,17 +104,37 @@ public class GameManager : MonoBehaviour
     {
         GameStateChangeDescriptor descriptor = new GameStateChangeDescriptor
         {
+            newState = GameState.PlayerTurn
+        };
+        
+        Debug.Log($"{TAG}: changing state to PLAYER TURN");
+        UpdateState(descriptor);
+    }
+
+    private void OnPlayerFinishedObstacleSequence()
+    {
+        GameStateChangeDescriptor descriptor = new GameStateChangeDescriptor
+        {
             newState = GameState.BeatSuccess
         };
         
-        Debug.Log($"{TAG}: changing state to BEAT SUCCESS");
+        Debug.Log($"{TAG}: changing state to OBSTACLE SUCCESS");
         UpdateState(descriptor);
+    }
+
+    private IEnumerator PlayIntroCoroutine()
+    {
+        yield return new WaitForSeconds(5);
+        UpdateState(new GameStateChangeDescriptor()
+        {
+            newState = GameState.ShowingBeats
+        });
     }
 }
 
 public enum GameState
 {
-    Idle, ShowingBeats, Obstacles, BeatSuccess, BeatLose
+    Idle, Intro, ShowingBeats, Obstacles, BeatSuccess, PlayerTurn, BeatLose
 }
 
 public class GameStateChangeDescriptor

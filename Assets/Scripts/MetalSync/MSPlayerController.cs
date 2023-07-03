@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,6 +13,20 @@ public class MSPlayerController : MonoBehaviour
     public LayerMask groundLayer; // The layer considered as ground
     public float turnAngle = 20.0f; // The angle to turn the player when moving left or right
     public float verticalBounds = 1f;
+
+    [SerializeField] private AudioSource _audioSource;
+    [SerializeField] private AudioClip jumpClip;
+    [SerializeField] private AudioClip doubleJumpClip;
+
+    [SerializeField] private AnimationCurve jumpCurve;
+    [SerializeField] private AnimationCurve fallCurve;
+    [SerializeField] private float jumpDuration = 1f;
+    [SerializeField] private float jumpHeight = 2f;
+    
+    private float targetJumpY = 0f;
+    private float targetMoveX = 0f;
+    private bool isJumping = false;
+    private bool isDoubleJumping = false;
     
     public float fallMultiplier = 2.5f;
     public float lowJumpMultiplier = 2f;
@@ -63,37 +79,124 @@ public class MSPlayerController : MonoBehaviour
 
         // Move the player horizontally
         float newXPosition = transform.position.x + moveHorizontal * moveSpeed * Time.deltaTime;
-        newXPosition = Mathf.Clamp(newXPosition, -trackWidth, trackWidth);
+        targetMoveX = Mathf.Clamp(newXPosition, -trackWidth, trackWidth);
         
         // Move the player vertically
         float newZPosition = transform.position.z + moveVertical * moveSpeed * Time.deltaTime;
         newZPosition = Mathf.Clamp(newZPosition, originalZPosition - verticalBounds * 1.5f,
             originalZPosition + verticalBounds);
 
-        transform.position = new Vector3(newXPosition, transform.position.y, newZPosition);
+        // transform.position = new Vector3(newXPosition, transform.position.y, newZPosition);
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Jump();
         }
         
-        if (rb.velocity.y < 0)
+        // if (rb.velocity.y < 0)
+        // {
+        //     rb.velocity += Vector3.up * Physics.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
+        // }
+        // else if (rb.velocity.y > 0 && !Input.GetKeyDown(KeyCode.Space))
+        // {
+        //     rb.velocity += Vector3.up * Physics.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;
+        // }
+    }
+
+    private void FixedUpdate()
+    {
+        if (isJumping || isDoubleJumping)
         {
-            rb.velocity += Vector3.up * Physics.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
+            rb.MovePosition(new Vector3(targetMoveX, targetJumpY, rb.transform.position.z));
         }
-        else if (rb.velocity.y > 0 && !Input.GetKeyDown(KeyCode.Space))
+        else
         {
-            rb.velocity += Vector3.up * Physics.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;
+            rb.MovePosition(new Vector3(targetMoveX, rb.transform.position.y, rb.transform.position.z));
         }
     }
 
     public void Jump()
     {
+        /*
         // Make the player jump if they're on the ground
         if (isGrounded)
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            _audioSource.PlayOneShot(jumpClip);
         }
+        else
+        {
+            animator.SetTrigger("DoubleJump");
+            rb.AddForce(Vector3.up * (jumpForce * .75f), ForceMode.Impulse);
+            _audioSource.PlayOneShot(doubleJumpClip);
+        }
+        */
+
+        if (isGrounded)
+        {
+            StartCoroutine(JumpCoroutine());
+        }
+        else
+        {
+            StopCoroutine("JumpCoroutine");
+            StartCoroutine(DoubleJumpCoroutine());
+        }
+    }
+
+    private IEnumerator JumpCoroutine()
+    {
+        float duration = jumpDuration / 2;
+        float timer = 0f;
+
+        float sourceY = rb.position.y;
+        float targetY = sourceY + jumpHeight;
+
+        isJumping = true;
+        
+        while (timer <= duration && !isDoubleJumping)
+        {
+            float t = timer / duration;
+            float curveT = jumpCurve.Evaluate(t);
+
+            targetJumpY = Mathf.LerpUnclamped(sourceY, targetY, curveT);
+            
+            Debug.Log($"[TEST] target Y is: {targetJumpY}, t is: {t}, curve t is: {curveT}");
+
+            timer += Time.deltaTime;
+            
+            yield return null;
+        }
+
+        isJumping = false;
+    }
+
+    private IEnumerator DoubleJumpCoroutine()
+    {
+        isJumping = false;
+        
+        float duration = jumpDuration;
+        float timer = 0f;
+
+        float sourceY = rb.position.y;
+        float targetY = sourceY + jumpHeight * 2;
+
+        isDoubleJumping = true;
+        
+        while (timer <= duration)
+        {
+            float t = timer / duration;
+            float curveT = jumpCurve.Evaluate(t);
+
+            targetJumpY = Mathf.LerpUnclamped(sourceY, targetY, curveT);
+            
+            Debug.Log($"[DOUBLE JUMP] target Y is: {targetJumpY}, t is: {t}, curve t is: {curveT}");
+
+            timer += Time.deltaTime;
+            
+            yield return null;
+        }
+
+        isDoubleJumping = false;
     }
 
     public void Hit()
