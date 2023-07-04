@@ -5398,12 +5398,16 @@ MonoBehaviour:
   numLanes: 3
   padding: 1
   obstaclePrefabs:
-  - identifier: 2
+  - posType: 2
     prefab: {fileID: 5604198959750211920, guid: 0c7654424165b4c7b8b7eec9064d95b9, type: 3}
-  - identifier: 1
+  - posType: 1
     prefab: {fileID: 2366023436199684192, guid: 7ff6a045d5379492284fa0ccf3f6b859, type: 3}
-  - identifier: 0
+  - posType: 1
+    prefab: {fileID: 2366023436199684192, guid: a117921504bc84df79bc23d1f19fff6b, type: 3}
+  - posType: 0
     prefab: {fileID: 5506274884849451258, guid: 851d74312bdbc40c7bd64f615e95dbcd, type: 3}
+  - posType: 0
+    prefab: {fileID: 5506274884849451258, guid: d7eed950e5e4e4bdd899fccbddbae916, type: 3}
 --- !u!4 &423340498
 Transform:
   m_ObjectHideFlags: 0
@@ -5412,7 +5416,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 423340496}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 48.2}
+  m_LocalPosition: {x: 0, y: 0, z: 85.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5856,7 +5860,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4044717213e31446939f7bd49c896ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_TrackedObjectOffset: {x: 0, y: -0.19, z: 0}
+  m_TrackedObjectOffset: {x: 0, y: 1.35, z: 0}
   m_LookaheadTime: 0.119
   m_LookaheadSmoothing: 7.8
   m_LookaheadIgnoreY: 0
@@ -6040,7 +6044,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 891183023}
-  m_LocalRotation: {x: 0.5600439, y: -0.000000009073121, z: 0.0000000061334635, w: 0.82846296}
+  m_LocalRotation: {x: 0.5600439, y: 0.000000029057263, z: -0.000000019642812, w: 0.828463}
   m_LocalPosition: {x: 0, y: 9.76, z: 1.08}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -6195,7 +6199,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: bc48e979e57ad475ab278d40e45e7646, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 5b87fe7391a404795acd1d0ecaa51797, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -6293,7 +6297,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fabf2ef6140b0479999e7fcb91976a96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _bpm: 58
+  _bpm: 105
   _audioSource: {fileID: 1146858272}
   _intervals:
   - _steps: 4
@@ -6779,7 +6783,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1483305282}
-  m_LocalRotation: {x: 0.15705028, y: 0.000000024309607, z: -0.0000000038658023, w: 0.9875906}
+  m_LocalRotation: {x: 0.10006631, y: 0.000000024487258, z: -0.0000000024627111, w: 0.9949808}
   m_LocalPosition: {x: 0, y: 5.32, z: -7.51}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -7463,8 +7467,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   obstacleIconPrefab: {fileID: 6879276846186837850, guid: 69afa901dd23e466b851becf04c6ff02, type: 3}
-  padding: 110
-  spawnYPosition: 180
+  padding: 95
+  spawnYPosition: -200
 --- !u!1 &2113891083
 GameObject:
   m_ObjectHideFlags: 0
@@ -7528,7 +7532,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2113891083}
-  m_LocalRotation: {x: 0.15705028, y: 0.000000024309607, z: -0.0000000038658023, w: 0.9875906}
+  m_LocalRotation: {x: 0.10006631, y: 0.000000024487258, z: -0.0000000024627111, w: 0.9949808}
   m_LocalPosition: {x: 0, y: 5.32, z: -7.51}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

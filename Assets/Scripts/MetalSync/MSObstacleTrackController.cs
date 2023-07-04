@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class MSObstacleTrackController : MonoBehaviour
@@ -13,7 +14,7 @@ public class MSObstacleTrackController : MonoBehaviour
     public float laneWidth = 3.0f; // The width of a lane
     public int numLanes = 3;
     public float padding = .5f;
-    public List<ObstacleType> obstaclePrefabs;
+    public List<ObstacleTemplate> obstaclePrefabs;
 
     private List<GameObject> activeObstacles; // The list of currently active obstacles
 
@@ -113,14 +114,17 @@ public class MSObstacleTrackController : MonoBehaviour
 
     private GameObject getObstaclePrefab(ObstaclePositionType posType)
     {
-        return obstaclePrefabs.Find(obsType => obsType.identifier == posType).prefab;
+        List<ObstacleTemplate> matching = obstaclePrefabs.FindAll(obsType => obsType.posType == posType);
+        GameObject randomMatching = matching[Random.Range(0, matching.Count)].prefab;
+        return randomMatching;
     }
 }
 
 [Serializable]
-public class ObstacleType
+public class ObstacleTemplate
 {
-    public ObstaclePositionType identifier;
+    [FormerlySerializedAs("identifier")] 
+    public ObstaclePositionType posType;
     public GameObject prefab;
 }
 
