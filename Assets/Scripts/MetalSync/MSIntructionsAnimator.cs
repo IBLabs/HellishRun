@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -66,31 +67,55 @@ public class MSIntructionsAnimator : MonoBehaviour
         float exitScratchRatio = .01f;
 
         if (!exit) targetImage.material.SetFloat("_ScratchRatio", enterScratchRatio);
+        
         float duration = enterDuration;
         float timer = 0;
 
-        float fromValue = exit ? .07f : -3f;
-        float toValue = exit ? -3f : .07f;
+        float fromFadeOffset = exit ? .07f : -3f;
+        float toFadeOffset = exit ? -3f : .07f;
 
-        Vector2 startPos = origPos - new Vector2(moveOffset, 0);
+        float fromScratchRatio = exit ? enterScratchRatio : exitScratchRatio;
+        float toScratchRatio = exit ? exitScratchRatio : enterScratchRatio;
+
+        Vector2 targetPos = imageTransform.anchoredPosition + new Vector2(exit ? -moveOffset * 10 : moveOffset, 0);
+        Vector2 fromAnchoredPos = exit ? imageTransform.anchoredPosition : targetPos;
+        Vector2 toAnchoredPos = exit ? targetPos : imageTransform.anchoredPosition;
+
+        imageTransform.DOAnchorPos(toAnchoredPos, duration).From(fromAnchoredPos).SetEase(moveCurve);
+        targetImage.material.DOFloat(toFadeOffset, "_FadeOffset", duration).SetEase(fadeCurve);
+        targetImage.material.DOFloat(toScratchRatio, "_ScratchRatio", duration).SetEase(fadeCurve);
+
+        yield return new WaitForSeconds(duration);
+        
+        /*
         while (timer <= duration)
         {
             float t = timer / duration;
 
-            imageTransform.anchoredPosition = Vector2.Lerp(exit ? origPos : startPos, exit ? startPos : origPos,
-                moveCurve.Evaluate(t));
-            targetImage.material.SetFloat("_FadeOffset", Mathf.Lerp(fromValue, toValue, fadeCurve.Evaluate(t)));
-            targetImage.material.SetFloat("_ScratchRatio",
-                Mathf.Lerp(exit ? enterScratchRatio : exitScratchRatio, exit ? exitScratchRatio : enterScratchRatio,
-                    fadeCurve.Evaluate(t)));
+            imageTransform.anchoredPosition = Vector2.Lerp(
+                fromAnchoredPos,
+                toAnchoredPos,
+                moveCurve.Evaluate(t)
+                );
+
+            targetImage.material.SetFloat(
+                "_FadeOffset", 
+                Mathf.Lerp(fromFadeOffset, toFadeOffset, fadeCurve.Evaluate(t))
+                );
+            
+            targetImage.material.SetFloat(
+                "_ScratchRatio",
+                Mathf.Lerp(fromScratchRation, toScratchRatio, 
+                    fadeCurve.Evaluate(t))
+                );
 
             timer += Time.deltaTime;
 
             yield return null;
         }
+        */
 
         if (exit) targetImage.material.SetFloat("_ScratchRatio", exitScratchRatio);
-        if (killOnExit) 
-            Destroy(gameObject);
+        if (killOnExit)  Destroy(gameObject);
     }
 }

@@ -56,6 +56,8 @@ namespace MetalSync
 
         private void RemoveIcon()
         {
+            if (activeIcons.Count == 0) return;
+
             GameObject firstActiveIcon = activeIcons.Dequeue();
 
             MSIntructionsAnimator instructionAnimator = firstActiveIcon.GetComponent<MSIntructionsAnimator>();
