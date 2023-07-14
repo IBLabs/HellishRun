@@ -13,11 +13,7 @@ public class MSSuccessHitController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("[TEST] exit trigger detected!");
-        
-        int successHitLayerMask = LayerMask.GetMask("SuccessHit");
-
-        if ((successHitLayerMask & (1 << other.gameObject.layer)) != 0)
+        if (other.CompareTag("SuccessHit"))
         {
             audioSource.PlayOneShot(successHitClip);
             PerformedSuccessHit?.Invoke();

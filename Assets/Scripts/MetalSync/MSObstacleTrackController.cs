@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using MetalSync;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
@@ -9,7 +10,6 @@ public class MSObstacleTrackController : MonoBehaviour
 {
     public static event Action FinishedSpawningObstacles;
 
-    public GameObject obstaclePrefab; // The prefab for the obstacles
     public float speed = 5.0f; // The speed at which the obstacles move
     public float laneWidth = 3.0f; // The width of a lane
     public int numLanes = 3;
@@ -18,10 +18,39 @@ public class MSObstacleTrackController : MonoBehaviour
 
     private List<GameObject> activeObstacles; // The list of currently active obstacles
 
-    private List<ObstacleNote> sequence;
+    private List<MSObstacleNote> sequence;
     private int index;
 
     private int currentNoteBeatCounter;
+    
+    #region Event Handling
+
+    private void OnEnable()
+    {
+        Subscribe();
+    }
+
+    private void OnDisable()
+    {
+        Unsubscribe();
+    }
+
+    private void Subscribe()
+    {
+        MSBeatObstacleGenerator.SpawnObstacle += OnSpawnObstacle;
+    }
+
+    private void Unsubscribe()
+    {
+        MSBeatObstacleGenerator.SpawnObstacle -= OnSpawnObstacle;
+    }
+
+    private void OnSpawnObstacle(MSSimpleObstacleNote note)
+    {
+        SpawnObstacle(note.identifier);
+    }
+    
+    #endregion
 
     private void Start()
     {
@@ -46,7 +75,7 @@ public class MSObstacleTrackController : MonoBehaviour
         }
     }
     
-    public void StartSpawning(List<ObstacleNote> newSequence)
+    public void StartSpawning(List<MSObstacleNote> newSequence)
     {
         // Set the new sequence and reset the index
         sequence = newSequence;
@@ -58,7 +87,7 @@ public class MSObstacleTrackController : MonoBehaviour
         if (sequence == null || index >= sequence.Count) return;
 
         // Spawn an obstacle based on the current note
-        ObstacleNote currentNote = sequence[index];
+        MSObstacleNote currentNote = sequence[index];
 
         if (currentNoteBeatCounter < currentNote.beatCount - 1)
         {
@@ -66,7 +95,7 @@ public class MSObstacleTrackController : MonoBehaviour
             return;
         }
         
-        SpawnObstacle(currentNote);
+        SpawnObstacle(currentNote.identifier);
 
         currentNoteBeatCounter = 0;
         index++;
@@ -75,10 +104,10 @@ public class MSObstacleTrackController : MonoBehaviour
             FinishedSpawningObstacles?.Invoke();
     }
 
-    private void SpawnObstacle(ObstacleNote note)
+    private void SpawnObstacle(string noteIdentifier)
     {
         ObstaclePositionType posType;
-        if (!Enum.TryParse(note.identifier, true, out posType))
+        if (!Enum.TryParse(noteIdentifier, true, out posType))
         {
             Debug.Log("[TEST]: obstacle position type is unsupported");
             return;

@@ -16,7 +16,8 @@ public class MSObstacleLighter : MonoBehaviour
     {
         int successHitLayerMask = LayerMask.GetMask("Player");
 
-        if ((successHitLayerMask & (1 << other.gameObject.layer)) != 0)
+        // if ((successHitLayerMask & (1 << other.gameObject.layer)) != 0)
+        if (other.CompareTag("Player"))
         {
             SuccessHit?.Invoke();
             

@@ -7,6 +7,8 @@ using UnityEngine.Serialization;
 
 public class MSCharacterController : MonoBehaviour
 {
+    public static event Action PlayerTookHit;
+    
     [SerializeField] private CharacterController _characterController;
     [SerializeField] private Animator animator;
 
@@ -58,6 +60,27 @@ public class MSCharacterController : MonoBehaviour
         {
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.identity,
                 Time.deltaTime * speed * _rotationSpeedFactor);
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        BoxCollider[] colliders = {
+            other.gameObject.GetComponentInParent<BoxCollider>(),
+            other.gameObject.GetComponentInChildren<BoxCollider>()
+        };
+        
+        foreach (var collider in colliders)
+            if (collider != null)
+            {
+                Debug.Log($"[TEST]: destroying collider with tag: {collider.gameObject.tag}"); 
+                collider.enabled = false;
+            }
+                
+        
+        if (other.CompareTag("Obstacle"))
+        {
+            PlayerTookHit?.Invoke();
         }
     }
 }

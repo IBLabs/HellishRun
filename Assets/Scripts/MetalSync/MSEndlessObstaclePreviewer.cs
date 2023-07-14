@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,23 +11,62 @@ namespace MetalSync
     {
         [SerializeField] private Transform parentCanvas;
         [SerializeField] private GameObject iconTemplatePrefab;
-        
+
+        [SerializeField] private RectTransform targetPosition;
         [SerializeField] private float iconSize = 56f;
         [SerializeField] private float padding = 16f;
         [SerializeField] private int maxIconCount = 7;
 
         private Queue<GameObject> activeIcons = new();
+        
+        #region Event Handling
 
-        private void Start()
+        private void OnEnable()
         {
-            
+            Subscribe();
         }
+
+        private void OnDisable()
+        {
+            Unsusbsribe();
+        }
+
+        private void Subscribe()
+        {
+            MSBeatObstacleGenerator.SpawnObstacle += OnSpawnObstacle;
+            MSObstacleLighter.SuccessHit += OnSuccessHit;
+            MSCharacterController.PlayerTookHit += OnPlayerTookHit;
+        }
+
+        private void Unsusbsribe()
+        {
+            MSBeatObstacleGenerator.SpawnObstacle -= OnSpawnObstacle;
+            MSObstacleLighter.SuccessHit -= OnSuccessHit;
+            MSCharacterController.PlayerTookHit -= OnPlayerTookHit;
+        }
+
+        private void OnSpawnObstacle(MSSimpleObstacleNote note)
+        {
+            SpawnIcon(note);
+        }
+
+        private void OnSuccessHit()
+        {
+            RemoveIcon();
+        }
+
+        private void OnPlayerTookHit()
+        {
+            RemoveIcon();
+        }
+        
+        #endregion
 
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.G))
             {
-                SpawnIcon();
+                SpawnIcon(new MSSimpleObstacleNote("left"));
             }
 
             if (Input.GetKeyDown(KeyCode.H))
@@ -35,15 +75,24 @@ namespace MetalSync
             }
         }
 
-        private void SpawnIcon()
+        private void SpawnIcon(MSSimpleObstacleNote note)
         {
             if (activeIcons.Count == maxIconCount) return;
 
             GameObject newIcon = CreateNewIcon(iconSize);
 
+            Image newIconImage = newIcon.GetComponent<Image>();
+            Material updatedMat = new Material(newIconImage.material);
+            updatedMat.SetTexture("_Texture", Resources.Load<Texture>(note.identifier));
+            newIconImage.material = updatedMat;
+
             RectTransform newIconRectTransform = newIcon.GetComponent<RectTransform>();
             float xPos = CalculateIconXPosition(activeIcons.Count);
-            newIconRectTransform.anchoredPosition = new Vector2(xPos, 0f);
+
+            float targetY = 0;
+            if (targetPosition != null) targetY = targetPosition.anchoredPosition.y;
+
+            newIconRectTransform.anchoredPosition = new Vector2(xPos, targetY); 
 
             MSIntructionsAnimator instructionAnimator = newIcon.GetComponent<MSIntructionsAnimator>();
             if (instructionAnimator != null)

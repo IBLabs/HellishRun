@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MetalSync;
 using Unity.VisualScripting;
 
 public class MSObstaclePreviewer : MonoBehaviour
@@ -51,7 +52,7 @@ public class MSObstaclePreviewer : MonoBehaviour
         MSObstacleLighter.SuccessHit -= OnSuccessHit;
     }
 
-    public void ShowObstacle(ObstacleNote obstacleNote)
+    public void ShowObstacle(MSObstacleNote msObstacleNote)
     {
         if (icons.Count == 0) return;
 
@@ -77,7 +78,7 @@ public class MSObstaclePreviewer : MonoBehaviour
         */
     }
 
-    private void OnGeneratedNewSequence(List<ObstacleNote> notes)
+    private void OnGeneratedNewSequence(List<MSObstacleNote> notes)
     {
         currentIconIndex = 0;
         icons.Clear();
@@ -119,6 +120,8 @@ public class MSObstaclePreviewer : MonoBehaviour
 
     private void OnSuccessHit()
     {
+        if (iconsToKill == null || iconsToKill.Count == 0) return; 
+        
         var currentIcon = iconsToKill.Dequeue();
         currentIcon.GetComponent<MSIntructionsAnimator>().SetVisible(false, true);
         

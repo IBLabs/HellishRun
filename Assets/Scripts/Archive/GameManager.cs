@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using MetalSync;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -10,6 +11,8 @@ public class GameManager : MonoBehaviour
     
     [SerializeField] private BeatInstructor _beatInstructor;
     [SerializeField] private MSObstacleTrackController _obstacleTrackController;
+
+    [SerializeField] private MSBeatObstacleGenerator _beatObstacleGenerator;
     
     public GameState CurrentState => _currentState;
 
@@ -64,13 +67,17 @@ public class GameManager : MonoBehaviour
         {
             case GameState.Intro:
                 break;
+            
+            case GameState.EndlessBeats:
+                _beatObstacleGenerator.isActive = true;
+                break;
 
             case GameState.ShowingBeats:
                 _beatInstructor.ShowSequence();
                 break;
             
             case GameState.Obstacles:
-                _obstacleTrackController.StartSpawning((List<ObstacleNote>)descriptor.context["obstacles"]);
+                _obstacleTrackController.StartSpawning((List<MSObstacleNote>)descriptor.context["obstacles"]);
                 break;
             
             case GameState.PlayerTurn:
@@ -85,7 +92,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void OnFinishedSequence(List<ObstacleNote> notes)
+    private void OnFinishedSequence(List<MSObstacleNote> notes)
     {
         GameStateChangeDescriptor descriptor = new GameStateChangeDescriptor
         {
@@ -127,14 +134,14 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(5);
         UpdateState(new GameStateChangeDescriptor()
         {
-            newState = GameState.ShowingBeats
+            newState = GameState.EndlessBeats
         });
     }
 }
 
 public enum GameState
 {
-    Idle, Intro, ShowingBeats, Obstacles, BeatSuccess, PlayerTurn, BeatLose
+    Idle, Intro, EndlessBeats, ShowingBeats, Obstacles, BeatSuccess, PlayerTurn, BeatLose
 }
 
 public class GameStateChangeDescriptor
