@@ -10,7 +10,6 @@ public class ChainsRollupController : MonoBehaviour
 
     [SerializeField] private float duration = 5f;
     [SerializeField] private float offset = 1f;
-    [SerializeField] private Ease easing = Ease.InOutCubic;
     [SerializeField] private AnimationCurve animCurve;
     [SerializeField] private AudioSource _audioSource;
     [SerializeField] private RectTransform uiRectTransform;

@@ -10,11 +10,8 @@ public class PlayerController : MonoBehaviour
     public float rotationAngle = 90f; // The angle of rotation when the player moves
     public float rotationSpeed = 10f;
     
-    
     private Vector3 targetPosition;
-    private bool isMoving = false;
-
-    private float targetRot = 0f;
+    private float targetRot;
 
     void Update()
     {
@@ -36,25 +33,10 @@ public class PlayerController : MonoBehaviour
         }
         
         transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(targetRot, Vector3.up), rotationSpeed * Time.deltaTime);
-
-        return;
-        
-        if (!isMoving)
-        {
-            if (keyboard.leftArrowKey.wasPressedThisFrame)
-            {
-                StartCoroutine(MovePlayer(new Vector3(transform.position.x - moveSpeed, transform.position.y, transform.position.z), -rotationAngle));
-            }
-            else if (keyboard.rightArrowKey.wasPressedThisFrame)
-            {
-                StartCoroutine(MovePlayer(new Vector3(transform.position.x + moveSpeed, transform.position.y, transform.position.z), rotationAngle));
-            }
-        }
     }
 
     IEnumerator MovePlayer(Vector3 targetPosition, float rotationAngle)
     {
-        isMoving = true;
         // Calculate the rotation needed and divide by the duration to get the speed
         float rotationSpeed = rotationAngle / rotateDuration;
 
@@ -78,7 +60,5 @@ public class PlayerController : MonoBehaviour
             transform.Rotate(Vector3.up, -rotationAngle * Time.deltaTime);
             yield return null;
         }
-
-        isMoving = false;
     }
 }

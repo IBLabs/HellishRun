@@ -69,7 +69,6 @@ public class MSIntructionsAnimator : MonoBehaviour
         if (!exit) targetImage.material.SetFloat("_ScratchRatio", enterScratchRatio);
         
         float duration = enterDuration;
-        float timer = 0;
 
         float fromFadeOffset = exit ? .07f : -3f;
         float toFadeOffset = exit ? -3f : .07f;

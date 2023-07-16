@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class MSScriptTransitionController : MonoBehaviour
 {
     [SerializeField] private Image transitionImage;
-    [SerializeField] private Light light;
+    [FormerlySerializedAs("light")] [SerializeField] private Light targetLight;
     
     // Start is called before the first frame update
     void Start()
@@ -23,15 +24,15 @@ public class MSScriptTransitionController : MonoBehaviour
 
     private IEnumerator PerformFadeInCoroutine()
     {
-        light.intensity = 0f;
+        targetLight.intensity = 0f;
         
         transitionImage.DOColor(Color.black.WithAlpha(0), 1f).From(Color.black);
 
         yield return new WaitForSeconds(.5f);
         
-        if (light != null)
+        if (targetLight != null)
         {
-            light.DOIntensity(1f, 1f).From(0f).SetEase(Ease.Linear);
+            targetLight.DOIntensity(1f, 1f).From(0f).SetEase(Ease.Linear);
         }
     }
 
