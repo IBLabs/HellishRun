@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using DG.Tweening;
 using Newtonsoft.Json;
 using TMPro;
@@ -12,7 +13,7 @@ namespace MetalSync
     {
         public static event Action PlayerLose;
 
-        [SerializeField] private TextMeshProUGUI healthText;
+        [SerializeField] private List<Image> heartImages;
         [SerializeField] private Image redScreenImage;
 
         [SerializeField] private Color initialColor;
@@ -45,7 +46,8 @@ namespace MetalSync
 
             healthCount -= 1;
 
-            healthText.text = $"{healthCount}";
+
+            heartImages[healthCount].gameObject.SetActive(false);
 
             if (healthCount == 0)
             {

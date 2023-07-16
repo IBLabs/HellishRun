@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 
 public class MSCharacterController : MonoBehaviour
@@ -11,11 +12,13 @@ public class MSCharacterController : MonoBehaviour
     
     [SerializeField] private CharacterController _characterController;
     [SerializeField] private Animator animator;
+    [SerializeField] private InputActionAsset input;
 
     [SerializeField] private float speed = 3f;
     [SerializeField] private float rotationSpeed = 90f;
     [SerializeField] private float gravity = -20f;
     [SerializeField] private float jumpSpeed = 15f;
+    [SerializeField] private float smoothInputSpeed = .2f;
 
     private Vector3 _moveVelocity = Vector3.zero;
     private readonly float _rotationSpeedFactor = 3f;
@@ -23,19 +26,19 @@ public class MSCharacterController : MonoBehaviour
     private static readonly int DoubleJump = Animator.StringToHash("DoubleJump");
     private static readonly int IsJumping = Animator.StringToHash("IsJumping");
 
+    private Vector2 currentInputVector;
+    private Vector2 smoothInputVelocity;
+
     void Update()
     {
-        var hInput = Input.GetAxis("Horizontal");
-        var vInput = Input.GetAxis("Vertical");
+        Vector2 movement = input["Move"].ReadValue<Vector2>();
+        currentInputVector = Vector2.SmoothDamp(currentInputVector, movement, ref smoothInputVelocity, smoothInputSpeed);
+
+        float hInput = currentInputVector.x;
+        float vInput = currentInputVector.y;
 
         _moveVelocity = new Vector3(hInput * speed, _moveVelocity.y, vInput * speed);
 
-        if (Input.GetButtonDown("Jump"))
-        {
-            _moveVelocity.y = _characterController.isGrounded ? jumpSpeed : jumpSpeed * .75f;
-            if (!_characterController.isGrounded) animator.SetTrigger(DoubleJump);
-        }
-        
         animator.SetBool(IsJumping, !_characterController.isGrounded);
 
         HandlePlayerRotation(hInput);
@@ -43,6 +46,19 @@ public class MSCharacterController : MonoBehaviour
         _moveVelocity.y += gravity * Time.deltaTime;
 
         _characterController.Move(_moveVelocity * Time.deltaTime);
+    }
+
+    public void Jump(InputAction.CallbackContext context)
+    {
+        if (!context.performed) return;
+        
+        _moveVelocity.y = _characterController.isGrounded ? jumpSpeed : jumpSpeed * .75f;
+        if (!_characterController.isGrounded) animator.SetTrigger(DoubleJump);
+    }
+
+    public void Move(InputAction.CallbackContext context)
+    {
+        
     }
 
     private void HandlePlayerRotation(float hInput)
@@ -73,7 +89,6 @@ public class MSCharacterController : MonoBehaviour
         foreach (var collider in colliders)
             if (collider != null)
             {
-                Debug.Log($"[TEST]: destroying collider with tag: {collider.gameObject.tag}"); 
                 collider.enabled = false;
             }
                 

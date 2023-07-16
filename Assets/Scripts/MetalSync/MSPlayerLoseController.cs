@@ -1,6 +1,9 @@
+// Testing with a comment
+
 using System.Collections;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace MetalSync
 {
@@ -50,7 +53,9 @@ namespace MetalSync
 
             bgmAudioSource.DOFade(0f, .2f);
 
-            // TODO: show lose screen
+            yield return new WaitForSeconds(.5f);
+            
+            SceneManager.LoadSceneAsync(2);
         }
     }
 }

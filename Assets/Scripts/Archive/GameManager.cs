@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private MSObstacleTrackController _obstacleTrackController;
 
     [SerializeField] private MSBeatObstacleGenerator _beatObstacleGenerator;
+
+    [SerializeField] private MSTutorialController _tutorialController;
     
     public GameState CurrentState => _currentState;
 
@@ -44,6 +46,7 @@ public class GameManager : MonoBehaviour
         BeatInstructor.FinishedSequence += OnFinishedSequence;
         MSObstacleTrackController.FinishedSpawningObstacles += OnFinishedSpawningObstacles;
         MSObstaclePreviewer.PlayerFinishedObstacleSequence += OnPlayerFinishedObstacleSequence;
+        MSTutorialController.TutorialFinished += OnTutorialFinished;
     }
 
     private void UnsubscribeEvents()
@@ -51,6 +54,7 @@ public class GameManager : MonoBehaviour
         BeatInstructor.FinishedSequence -= OnFinishedSequence;
         MSObstacleTrackController.FinishedSpawningObstacles -= OnFinishedSpawningObstacles;
         MSObstaclePreviewer.PlayerFinishedObstacleSequence -= OnPlayerFinishedObstacleSequence;
+        MSTutorialController.TutorialFinished -= OnTutorialFinished;
     }
 
     private void UpdateState(GameStateChangeDescriptor descriptor)
@@ -66,6 +70,10 @@ public class GameManager : MonoBehaviour
         switch (descriptor.newState)
         {
             case GameState.Intro:
+                break;
+            
+            case GameState.Tutorial :
+                _tutorialController.StartTutorial();
                 break;
             
             case GameState.EndlessBeats:
@@ -129,19 +137,30 @@ public class GameManager : MonoBehaviour
         UpdateState(descriptor);
     }
 
+    private void OnTutorialFinished()
+    {
+        GameStateChangeDescriptor descriptor = new GameStateChangeDescriptor
+        {
+            newState = GameState.EndlessBeats
+        };
+        
+        Debug.Log($"{TAG}: changine state to TUTORIAL");
+        UpdateState(descriptor);
+    }
+
     private IEnumerator PlayIntroCoroutine()
     {
         yield return new WaitForSeconds(5);
         UpdateState(new GameStateChangeDescriptor()
         {
-            newState = GameState.EndlessBeats
+            newState = GameState.Tutorial
         });
     }
 }
 
 public enum GameState
 {
-    Idle, Intro, EndlessBeats, ShowingBeats, Obstacles, BeatSuccess, PlayerTurn, BeatLose
+    Idle, Intro, Tutorial, EndlessBeats, ShowingBeats, Obstacles, BeatSuccess, PlayerTurn, BeatLose
 }
 
 public class GameStateChangeDescriptor
