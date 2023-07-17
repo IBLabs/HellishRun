@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,25 +9,17 @@ public class MSRetryController : MonoBehaviour
     [SerializeField] private KeyCode retryKey;
 
     [SerializeField] private MSScriptTransitionController transitionController;
-    
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField] private AudioSource audioSource;
 
-    // Update is called once per frame
-    void Update()
+    public void Retry()
     {
-        if (Input.GetKeyDown(retryKey))
-        {
-            StartCoroutine(RetryCoroutine());
-        }
+        StartCoroutine(RetryCoroutine());
     }
 
     private IEnumerator RetryCoroutine()
     {
         transitionController.PerformFadeOut();
+        audioSource.DOFade(0, 1f);
 
         yield return new WaitForSeconds(1f);
 

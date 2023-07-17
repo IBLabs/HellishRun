@@ -1,7 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -26,7 +24,7 @@ public class MSScriptTransitionController : MonoBehaviour
     {
         targetLight.intensity = 0f;
         
-        transitionImage.DOColor(Color.black.WithAlpha(0), 1f).From(Color.black);
+        transitionImage.DOColor(new Color(0, 0, 0, 0), 1f).From(Color.black);
 
         yield return new WaitForSeconds(.5f);
         
@@ -38,6 +36,6 @@ public class MSScriptTransitionController : MonoBehaviour
 
     public void PerformFadeOut()
     {
-        transitionImage.DOColor(Color.black, 1f).From(Color.black.WithAlpha(0));
+        transitionImage.DOColor(Color.black, 1f).From(new Color(0, 0, 0, 0));
     }
 }

@@ -8,6 +8,8 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     private const string TAG = "[GAME MANAGER]";
+
+    private static bool _didFinishTutorial;
     
     [SerializeField] private BeatInstructor _beatInstructor;
     [SerializeField] private MSObstacleTrackController _obstacleTrackController;
@@ -139,22 +141,25 @@ public class GameManager : MonoBehaviour
 
     private void OnTutorialFinished()
     {
-        GameStateChangeDescriptor descriptor = new GameStateChangeDescriptor
-        {
-            newState = GameState.EndlessBeats
-        };
-        
+        _didFinishTutorial = true;
+
         Debug.Log($"{TAG}: changine state to TUTORIAL");
-        UpdateState(descriptor);
+        UpdateState(new GameStateChangeDescriptor { newState = GameState.EndlessBeats });
     }
 
     private IEnumerator PlayIntroCoroutine()
     {
         yield return new WaitForSeconds(5);
-        UpdateState(new GameStateChangeDescriptor()
+
+        if (_didFinishTutorial)
         {
-            newState = GameState.Tutorial
-        });
+            UpdateState(new GameStateChangeDescriptor() { newState = GameState.EndlessBeats });
+        }
+        else
+        {
+            UpdateState(new GameStateChangeDescriptor() { newState = GameState.Tutorial });
+        }
+        
     }
 }
 

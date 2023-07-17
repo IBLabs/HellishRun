@@ -13,6 +13,9 @@ namespace MetalSync
     {
         public static event Action PlayerLose;
 
+        [SerializeField] private AudioSource audioSource;
+        [SerializeField] private AudioClip hitClip;
+
         [SerializeField] private List<Image> heartImages;
         [SerializeField] private Image redScreenImage;
 
@@ -42,11 +45,12 @@ namespace MetalSync
 
         private void OnPlayerHit()
         {
-            redScreenImage.DOColor(Color.black.WithAlpha(0), .5f).From(initialColor);
+            audioSource.PlayOneShot(hitClip);
+            
+            redScreenImage.DOColor(new Color(0, 0, 0, 0), .5f).From(initialColor);
 
             healthCount -= 1;
-
-
+            
             heartImages[healthCount].gameObject.SetActive(false);
 
             if (healthCount == 0)

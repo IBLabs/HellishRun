@@ -5,6 +5,7 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 public class MSCharacterController : MonoBehaviour
 {
@@ -13,6 +14,9 @@ public class MSCharacterController : MonoBehaviour
     [SerializeField] private CharacterController _characterController;
     [SerializeField] private Animator animator;
     [SerializeField] private InputActionAsset input;
+    [SerializeField] private AudioSource audioSource;
+
+    [SerializeField] private List<AudioClip> jumpClips;
 
     [SerializeField] private float speed = 3f;
     [SerializeField] private float rotationSpeed = 90f;
@@ -28,6 +32,8 @@ public class MSCharacterController : MonoBehaviour
 
     private Vector2 currentInputVector;
     private Vector2 smoothInputVelocity;
+
+    private int currentJumpClip;
 
     void Update()
     {
@@ -51,6 +57,14 @@ public class MSCharacterController : MonoBehaviour
     public void Jump(InputAction.CallbackContext context)
     {
         if (!context.performed) return;
+
+        int newJumpClipIndex;
+        do newJumpClipIndex = Random.Range(0, jumpClips.Count);
+        while (newJumpClipIndex == currentJumpClip);
+        currentJumpClip = newJumpClipIndex;
+            
+        AudioClip targetJumpClip = jumpClips[currentJumpClip];
+        audioSource.PlayOneShot(targetJumpClip);
         
         _moveVelocity.y = _characterController.isGrounded ? jumpSpeed : jumpSpeed * .75f;
         if (!_characterController.isGrounded) animator.SetTrigger(DoubleJump);

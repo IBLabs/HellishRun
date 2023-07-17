@@ -12,7 +12,11 @@ public class MSTutorialController : MonoBehaviour
     
     [SerializeField] private TextMeshProUGUI tutorialText;
     [SerializeField] private RectTransform containerTransform;
-    
+    [SerializeField] private AudioSource audioSource;
+
+    [SerializeField] private AudioClip chainDownClip;
+    [SerializeField] private AudioClip chainUpClip;
+
     [SerializeField] private float movementThreshold = .8f;
     [SerializeField] private float textHideY = 130f;
     [SerializeField] private float textShowY = -180f;
@@ -122,13 +126,17 @@ public class MSTutorialController : MonoBehaviour
 
     private YieldInstruction PerformOutAnimation()
     {
+        audioSource.PlayOneShot(chainUpClip);
+        
         Tween outTween = containerTransform.DOAnchorPosY(textHideY, 1f).From(new Vector2(0, textShowY)).SetEase(Ease.InBack);
         return outTween.WaitForCompletion();
     }
 
     private YieldInstruction PerformInAnimation()
     {
-        Tween inTween = containerTransform.DOAnchorPosY(textShowY, 1f).From(new Vector2(0, textHideY)).SetEase(Ease.OutBack);
+        audioSource.PlayOneShot(chainDownClip);
+
+        Tween inTween = containerTransform.DOAnchorPosY(textShowY, 1.7f).From(new Vector2(0, textHideY)).SetEase(Ease.OutBack);
         return inTween.WaitForCompletion();
     }
 

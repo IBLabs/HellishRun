@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
@@ -12,17 +13,11 @@ public class MSLevelLoader : MonoBehaviour
     [SerializeField] private AudioSource clipAudioSource;
     [SerializeField] private AudioClip startGameClip;
 
-    void Update()
+    public void LoadNextScene(InputAction.CallbackContext context)
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            PerformStartGameMusic();
-            LoadNextScene();
-        }
-    }
+        if (!context.performed) return;
 
-    private void LoadNextScene()
-    {
+        PerformStartGameMusic();
         StartCoroutine(FadeInCoroutine());
     }
 
